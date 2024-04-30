@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+</head>
+<body> 
+
+    <span style="font-size: 65pt; color: red;">
+        <b style="-webkit-text-stroke-width: 5px; -webkit-text-stroke-color: rgb(28, 163, 39);">Now: </b>
+        </span>
+
+    <h1>Product List</h1>
+    <ul id="product-list"></ul>
+
+    <h1>Add Product</h1>
+    <form id="product-form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" required><br><br>
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" step="0.01" required><br><br>
+        <button type="submit">Add Product</button>
+    </form>
+
+    <script>
+        const productForm = document.getElementById('product-form');
+
+        productForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(productForm);
+            const newProduct = {
+                name: formData.get('name'),
+                quantity: formData.get('quantity'),
+                price: formData.get('price')
+            };
+
+            fetch('/api/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newProduct)
+            })
+            .then(response => response.json())
+            .then(product => {
+                const productList = document.getElementById('product-list');
+                const listItem = document.createElement('li');
+                listItem.textContent = `${product.name} - ${product.price}`;
+                productList.appendChild(listItem);
+
+                // Clear form fields
+                productForm.reset();
+            })
+            .catch(error => console.error('Error adding product:', error));
+        });
+
+        // Fetch and display existing products
+        fetch('/api/products')
+            .then(response => response.json())
+            .then(products => {
+                const productList = document.getElementById('product-list');
+                products.forEach(product => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${product.name} - ${product.price}`;
+
+                    // Add update button
+                    const updateButton = document.createElement('button');
+                    updateButton.textContent = 'Update';
+                    updateButton.addEventListener('click', () => updateProduct(product._id));
+                    listItem.appendChild(updateButton);
+
+                    productList.appendChild(listItem);
+                });
+            })
+            .catch(error => console.error('Error fetching products:', error));
+           
+
+        function updateProduct(productId) {
+            // Redirect to update page or show a modal for updating the product
+            // For now, just log the productId
+            console.log('Update product:', productId);
+            // Redirect to update page
+            window.location.href = `/update-product?id=${productId}`;
+        }
+    </script>
+</body>
+</html>
+
