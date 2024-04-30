@@ -20,7 +20,7 @@ app.use("/api/products",productRoute);
 mongoose.connect('mongodb+srv://akhiljohny:akhiljohny@backenddb.mfi5sxt.mongodb.net/Node-API?retryWrites=true&w=majority&appName=BackendDB')
     .then(() => {
         console.log('Connected!');
-        app.listen(3000, () => {
+        app.listen(3001, () => {
             console.group("server running on 3000")
         })
     })
